@@ -453,3 +453,13 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 ```
 
 Now the middleware should work correctly.
+
+Now we gotta make the logout function since we already have the routes and the button we just have to add this line of code in our LoginController:
+
+```php
+public function logout() {
+        Auth::logout();
+
+        return redirect()->route('login');
+    }
+```
