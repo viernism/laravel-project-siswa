@@ -4,11 +4,10 @@
 ```bash
 composer create-project laravel/laravel latukk
 ```
-
 in this case we're making Student Violation Tracker so name it something like that
 
 2. Now after we cd into the project and opened it in your favourite code editor we need to prepare the database called **"ukk_bk"**
-<br>
+
 3. Now to connect the database to the Project we need to change the settings in .env files to
 ```env
 DB_DATABASE = ukk_bk
