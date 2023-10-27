@@ -177,8 +177,10 @@ php artisan make:model Tanggapan
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
-
+        'petugas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Petugas::class,
+        ],
     ],
 ```
 
