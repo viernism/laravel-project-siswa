@@ -8,17 +8,16 @@ in this case we're making Student Violation Tracker so name it something like th
 
 2. Now after we cd into the project and opened it in your favourite code editor we need to prepare the database called **"ukk_bk"**
 
-3. Now to connect the database to the Project we need to change the settings in .env files to
+3. Open the .env file in your project directory and configure the database connection by setting the DB_DATABASE to "ukk_bk"
 ```env
 DB_DATABASE = ukk_bk
 ```
 
-4. Setting /config/app.php
+4. In the config/app.php file, set the timezone to your preferred timezone. For example, if you live in Jakarta, set it to "Asia/Jakarta."
 ```env
 'timezone' => 'Asia/Jakarta',
 ```
 
-Change the timezone according to where you live.
 
 5. Now we're making the migration for the tables in the database, there are 5 tables in total but one of them are a trigger table.
 
@@ -32,7 +31,7 @@ Schema::create('siswa', function (Blueprint $table) {
             $table->id();
             $table->char('nis', 10)->unique;
             $table->string('nama', 50);
-            $table->enum('kelas', ['MM1', 'MM2', 'RPL', 'TKJ']);
+            $table->string('kelas', 10);             
             $table->timestamps();
         });
 ```
@@ -91,7 +90,7 @@ Schema::create('pelanggaran', function (Blueprint $table) {
             $table->date('tgl_pelanggaran');
             $table->char('nis', 10);
             $table->text('isi_pelanggaran');
-            $table->string('foto', 25)->nullable();
+            $table->text('foto')->nullable();
             $table->timestamps();
         
             $table->foreign('nis')->references('nis')->on('siswa')
@@ -124,7 +123,7 @@ Schema::create('tanggapan', function (Blueprint $table) {
         });
 ```
 
-**Table Trigger Pelanggaran**:
+**Trigger Pelanggaran**:
 ```bash
 php artisan make:migration create_pelanggaran_trigger
 ```
@@ -133,13 +132,32 @@ Schema:
 ```php
 use Illuminate\Support\Facades\DB;
 
-DB::unprepared('
+public function up(): void
+    {
+        DB::unprepared('
         CREATE TRIGGER `inp_plgr` AFTER INSERT ON `pelanggaran` FOR EACH ROW
         BEGIN
             INSERT INTO `inp_pelanggaran` (nis, tgl_pelanggaran, id_pelanggaran)
             VALUES (NEW.nis, NOW(), NEW.id_pelanggaran);
         END;
         ');
+    }
+
+public function down(): void
+    {
+        DB::unprepared('DROP TRIGGER IF EXISTS `inp_plgr`');
+    }
+```
+
+**Table inp_pelanggaran**:
+```php
+Schema::create('inp_pelanggaran', function (Blueprint $table) {
+            $table->id();
+            $table->integer('nis');
+            $table->timestamp('tgl_pelanggaran');
+            $table->integer('id_pelanggaran');
+            $table->timestamps();
+        });
 ```
 
 After all that, run the migrations:
@@ -200,6 +218,9 @@ class Petugas extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $guard_name = 'web';
+    protected $guarded = ['id'];
+    protected $table = 'petugas';
+    public $timestamps = false;
 
     protected $fillable = [
         'id_petugas',
@@ -277,7 +298,6 @@ class CreatePetugasSeeder extends Seeder
         foreach ($users as $userData) {
             $user = Petugas::create($userData);
 
-            // Assign roles based on the Petugas's name
             if ($userData['nama'] === 'Admin') {
                 $user->assignRole($adminRole);
             } elseif ($userData['nama'] === 'Guru BK') {
@@ -290,10 +310,40 @@ class CreatePetugasSeeder extends Seeder
 
 Then seed the database by this command:
 ```bash
-php artisan db:seed --class=CreatePetugasSeederac
+php artisan db:seed --class=CreatePetugasSeeder
 ```
 
-9. Now we make the LoginController for Petugas to be able to log in to the site.
+Tips: Put call the CreatePetugasSeeder in DatabaseSeeder.php because by doing that you can just use --seed when you want to migrate the databse and seed it at the same time
+
+```php
+use Database\Seeders\CreatePetugasSeeder;
+
+public function run(): void
+    {
+        $this->call(CreatePetugasSeeder::class);
+    }
+```
+
+You can do:
+```php
+php artisan migrate --seed
+
+// or
+
+php artisan migrate:fresh --seed
+```
+
+9. Change model TriggerPelanggaran
+```php
+class TriggerPelanggaran extends Model
+{
+    use HasFactory;
+    protected $table = 'inp_pelanggaran';
+    public $timestamps = false;
+}
+```
+
+10. Now we make the LoginController for Petugas to be able to log in to the site.
 
 ```bash
 php artisan make:controller LoginController
@@ -463,3 +513,5 @@ public function logout() {
         return redirect()->route('login');
     }
 ```
+
+You should now be able to log in and log out with proper middleware to prevent back button access after logout.
