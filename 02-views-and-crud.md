@@ -72,7 +72,7 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 });
 ```
 
-Now we're making the master layout called 'app.blade.php' in the 'layouts' dir. but before we do that, let's download bootstrap and jquery and put it in the public directory like this:
+Now we're making the master layout, 'app.blade.php', within the 'layouts' directory. but before we do that, let's download bootstrap and jquery and put it in the public directory like this also make app.js ands tyle.css respective to their name:
 ```
 \PUBLIC
 │   .htaccess
@@ -113,8 +113,10 @@ Now we're making the master layout called 'app.blade.php' in the 'layouts' dir. 
 │       bootstrap.rtl.css.map
 │       bootstrap.rtl.min.css
 │       bootstrap.rtl.min.css.map
+|       style.css
 │
 └───js
+        app.js
         bootstrap.bundle.js
         bootstrap.bundle.js.map
         bootstrap.bundle.min.js
@@ -138,136 +140,410 @@ app.blade.php:
 ```php
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>{{ $title ?? 'app-name' }}</title>
 
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.css">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-    <script src="{{ asset('js/bootstrap.min.js')}}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/jquery-3.7.1.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 </head>
+
 <body>
-    @include('layouts.header')
+    @auth
+        <div class="wrapper">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="bg-dark">
+                <div class="h-100">
+                    <div class="sidebar-logo text-white">
+                        @auth
+                            @role('gurubk')
+                                Guru
+                                @elserole('admin')
+                                Admin
+                            @else
+                                Latihan UKK
+                            @endrole
+                        @endauth
 
-    <div class="container">
-        <div class="py-4 ms-5">
-            @yield('content')
-        </div>
-    </div>
-
-    @include('layouts.footer')
-</body>
-</html>
-```
-
-Now we're making the header and the footer.
-The header includes a navigation bar with conditional elements based on user roles (gurubk, admin, or guest). The footer is a simple copyright notice.
-
-
-header.blade.php:
-```php
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" data-bs-theme="dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <b>
-                @auth
-                    @role('gurubk')
-                        Guru
-                    @elserole('admin')
-                        Admin
-                    @else
-                        Latihan UKK
-                    @endrole
-                @endauth
-
-                @guest
-                    Latihan UKK
-                @endguest    
-            </b>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                @auth
-                    @role('gurubk')
-                        <li class="nav-item">
-                            <a class="nav-link" href="/siswa">Siswa</a>
+                        @guest
+                            Latihan UKK
+                        @endguest
+                    </div>
+                    <!-- Sidebar Navigation -->
+                    <ul class="sidebar-nav text-white">
+                        <li class="sidebar-header">
+                            Tools & Components
                         </li>
-                        <li class="nav-item">
-                            <a href="/petugas" class="nav-link">Petugas</a>
+                        <li class="sidebar-item">
+                            <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#pages" aria-expanded="false" aria-controls="pages">
+                                <i class="fa-regular fa-file-lines pe-2"></i>
+                                Pages
+                            </a>
+                            <ul id="pages" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                @foreach (['Siswa', 'Petugas', 'Pelanggaran', 'Tanggapan', 'Trigger'] as $item)
+                                    <li class="sidebar-item">
+                                        <a href="{{ url(strtolower($item)) }}" class="sidebar-link text-white">
+                                            {{ $item }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/pelanggaran">Pelanggaran</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/tanggapan">Tanggapan</a>
-                        </li> 
-                    @endrole
+                    </ul>
+            </aside>
+            <!-- Main Component -->
+            <div class="main">
+                <nav class="navbar navbar-expand px-3 border-bottom bg-dark" data-bs-theme="dark">
+                    <!-- Button for sidebar toggle -->
+                    <button class="btn" type="button" data-bs-theme="dark">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                    @role('admin')
-                        <li class="nav-item">
-                            <a class="nav-link" href="/siswa">Siswa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/petugas" class="nav-link">Petugas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/pelanggaran">Pelanggaran</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/tanggapan">Tanggapan</a>
-                        </li> 
-                    @endrole
-                @endauth
-            </ul>
+                    <div class="ms-auto">
+                        @auth
+                            @role('gurubk')
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger">Logout</button>
+                                </form>
+                            @endrole
 
-            <ul class="navbar-nav mb-2 mb-lg-0">
-                @auth
-                    @role('gurubk')
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-danger">Logout</button>
-                        </form>
-                    @endrole
-
-                    @role('admin')
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-danger">Logout</button>
-                        </form>
-                    @endrole
-                @endauth
-
-                @guest
-                <li class="nav-item dropdown">
-                <a class="btn btn-primary" href="/login">Login</a>
-                </li>
-                @endguest
-            </ul>
-        </div>
-    </div>
-</nav>
-
-```
-
-footer.blade.php:
-```php
-<footer class="footer text-dark">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <p>&copy; RPL, Inc</p>
+                            @role('admin')
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger">Logout</button>
+                                </form>
+                            @endrole
+                        @endauth
+                        @guest
+                            <li class="nav-item dropdown">
+                                <a class="btn btn-primary" href="/login">Login</a>
+                            </li>
+                        @endguest
+                    </div>
+                </nav>
+                <main class="content px-3 py-2">
+                    <div class="container-fluid">
+                        <div class="mb-3">
+                            @yield('content')
+                        </div>
+                    </div>
+                </main>
             </div>
         </div>
-    </div>
-</footer>
+    @endauth
+
+    @guest
+        <!-- Main Component -->
+        <div class="main">
+            <nav class="navbar navbar-expand px-3 border-bottom bg-dark" data-bs-theme="dark">
+                <a class="navbar-brand" href="/">
+                    <b>
+                        @guest
+                            Latihan UKK
+                        @endguest
+                    </b>
+                </a>
+
+                <div class="ms-auto">
+                    @guest
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-primary" href="/login">Login</a>
+                        </li>
+                    @endguest
+                </div>
+            </nav>
+            <main class="content px-3 py-2">
+                <div class="container-fluid">
+                    <div class="mb-3">
+                        @yield('content')
+                    </div>
+                </div>
+            </main>
+        </div>
+    @endguest
+
+    @include('layouts.footer')
+
+</body>
+
+</html>
+```
+style.css:
+```css
+:root,
+[data-bs-theme="light"] {
+  --bs-blue: #0d6efd;
+  --bs-indigo: #6610f2;
+  --bs-purple: #6f42c1;
+  --bs-pink: #d63384;
+  --bs-red: #dc3545;
+  --bs-orange: #fd7e14;
+  --bs-yellow: #ffc107;
+  --bs-green: #198754;
+  --bs-teal: #20c997;
+  --bs-cyan: #0dcaf0;
+  --bs-black: #000;
+  --bs-white: #fff;
+  --bs-gray: #6c757d;
+  --bs-gray-dark: #343a40;
+  --bs-gray-100: #f8f9fa;
+  --bs-gray-200: #e9ecef;
+  --bs-gray-300: #dee2e6;
+  --bs-gray-400: #ced4da;
+  --bs-gray-500: #adb5bd;
+  --bs-gray-600: #6c757d;
+  --bs-gray-700: #495057;
+  --bs-gray-800: #343a40;
+  --bs-gray-900: #212529;
+  --bs-primary: #0d6efd;
+  --bs-secondary: #6c757d;
+  --bs-success: #198754;
+  --bs-info: #0dcaf0;
+  --bs-warning: #ffc107;
+  --bs-danger: #dc3545;
+  --bs-light: #f8f9fa;
+  --bs-dark: #212529;
+  --bs-primary-rgb: 13, 110, 253;
+  --bs-secondary-rgb: 108, 117, 125;
+  --bs-success-rgb: 25, 135, 84;
+  --bs-info-rgb: 13, 202, 240;
+  --bs-warning-rgb: 255, 193, 7;
+  --bs-danger-rgb: 220, 53, 69;
+  --bs-light-rgb: 248, 249, 250;
+  --bs-dark-rgb: 33, 37, 41;
+  --bs-primary-text-emphasis: #052c65;
+  --bs-secondary-text-emphasis: #2b2f32;
+  --bs-success-text-emphasis: #0a3622;
+  --bs-info-text-emphasis: #055160;
+  --bs-warning-text-emphasis: #664d03;
+  --bs-danger-text-emphasis: #58151c;
+  --bs-light-text-emphasis: #495057;
+  --bs-dark-text-emphasis: #495057;
+  --bs-primary-bg-subtle: #cfe2ff;
+  --bs-secondary-bg-subtle: #e2e3e5;
+  --bs-success-bg-subtle: #d1e7dd;
+  --bs-info-bg-subtle: #cff4fc;
+  --bs-warning-bg-subtle: #fff3cd;
+  --bs-danger-bg-subtle: #f8d7da;
+  --bs-light-bg-subtle: #fcfcfd;
+  --bs-dark-bg-subtle: #ced4da;
+  --bs-primary-border-subtle: #9ec5fe;
+  --bs-secondary-border-subtle: #c4c8cb;
+  --bs-success-border-subtle: #a3cfbb;
+  --bs-info-border-subtle: #9eeaf9;
+  --bs-warning-border-subtle: #ffe69c;
+  --bs-danger-border-subtle: #f1aeb5;
+  --bs-light-border-subtle: #e9ecef;
+  --bs-dark-border-subtle: #adb5bd;
+  --bs-white-rgb: 255, 255, 255;
+  --bs-black-rgb: 0, 0, 0;
+  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --bs-gradient: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0)
+  );
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 1.5;
+  --bs-body-color: #212529;
+  --bs-body-color-rgb: 33, 37, 41;
+  --bs-body-bg: #fff;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-emphasis-color: #000;
+  --bs-emphasis-color-rgb: 0, 0, 0;
+  --bs-secondary-color: rgba(33, 37, 41, 0.75);
+  --bs-secondary-color-rgb: 33, 37, 41;
+  --bs-secondary-bg: #e9ecef;
+  --bs-secondary-bg-rgb: 233, 236, 239;
+  --bs-tertiary-color: rgba(33, 37, 41, 0.5);
+  --bs-tertiary-color-rgb: 33, 37, 41;
+  --bs-tertiary-bg: #f8f9fa;
+  --bs-tertiary-bg-rgb: 248, 249, 250;
+  --bs-heading-color: inherit;
+  --bs-link-color: #0d6efd;
+  --bs-link-color-rgb: 13, 110, 253;
+  --bs-link-decoration: underline;
+  --bs-link-hover-color: #0a58ca;
+  --bs-link-hover-color-rgb: 10, 88, 202;
+  --bs-code-color: #d63384;
+  --bs-highlight-color: #212529;
+  --bs-highlight-bg: #fff3cd;
+  --bs-border-width: 1px;
+  --bs-border-style: solid;
+  --bs-border-color: #dee2e6;
+  --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+  --bs-border-radius: 0.375rem;
+  --bs-border-radius-sm: 0.25rem;
+  --bs-border-radius-lg: 0.5rem;
+  --bs-border-radius-xl: 1rem;
+  --bs-border-radius-xxl: 2rem;
+  --bs-border-radius-2xl: var(--bs-border-radius-xxl);
+  --bs-border-radius-pill: 50rem;
+  --bs-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --bs-box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  --bs-box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+  --bs-focus-ring-width: 0.25rem;
+  --bs-focus-ring-opacity: 0.25;
+  --bs-focus-ring-color: rgba(13, 110, 253, 0.25);
+  --bs-form-valid-color: #198754;
+  --bs-form-valid-border-color: #198754;
+  --bs-form-invalid-color: #dc3545;
+  --bs-form-invalid-border-color: #dc3545;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+}
+
+h3 {
+  font-size: 1.2375rem;
+  color: #000000;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+}
+
+li {
+  list-style: none;
+}
+
+/* Layout skeleton */
+
+.wrapper {
+  align-items: stretch;
+  display: flex;
+  width: 100%;
+}
+
+#sidebar {
+  max-width: 264px;
+  min-width: 264px;
+  transition: all 0.35s ease-in-out;
+  box-shadow: 0 0 35px 0 rgba(49, 57, 66, 0.5);
+  z-index: 1111;
+}
+
+#sidebar,
+#sidebar a,
+#sidebar a:hover,
+#sidebar a:focus,
+#sidebar .sidebar-header {
+    color: #fff;
+}
+
+/* Sidebar collapse */
+
+#sidebar.collapsed {
+  margin-left: -264px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  transition: all 0.35s ease-in-out;
+}
+
+.sidebar-logo {
+  padding: 1.15rem 1.5rem;
+}
+
+.sidebar-logo a {
+  color: #000000;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sidebar-nav {
+  padding: 0;
+}
+
+.sidebar-header {
+  color: #000000;
+  font-size: 0.75rem;
+  padding: 1.5rem 1.5rem 0.375rem;
+}
+
+a.sidebar-link {
+  padding: 0.625rem 1.625rem;
+  color: #000000;
+  position: relative;
+  display: block;
+  font-size: 1rem;
+}
+
+.sidebar-link[data-bs-toggle="collapse"]::after {
+  border: solid;
+  border-width: 0 0.075rem 0.075rem 0;
+  content: "";
+  display: inline-block;
+  padding: 2px;
+  position: absolute;
+  right: 1.5rem;
+  top: 1.4rem;
+  transform: rotate(-135deg);
+  transition: all 0.2s ease-out;
+}
+
+.sidebar-link[data-bs-toggle="collapse"].collapsed::after {
+  transform: rotate(45deg);
+  transition: all 0.2s ease-out;
+}
+
+.content {
+  flex: 1;
+  max-width: 100vw;
+  width: 100vw;
+}
+
+/* Responsive */
+
+@media (min-width: 768px) {
+  .content {
+    width: auto;
+  }
+}
+```
+
+app.js:
+```js
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById('sidebar');
+    const toggler = document.querySelector(".btn");
+
+    toggler.addEventListener("click", function () {
+        sidebar.classList.toggle("collapsed");
+    });
+});
 ```
 
 After that, we can make the tables. We're gonna learn how to fetch data and display it in the views, we're gonna work on home.blade.php first and go through everything else later on.
@@ -772,12 +1048,15 @@ And the route inside the auth route group:
 Route::delete('/siswa/{id}', [SiswaController::class, 'destroy'])->name('siswa.destroy');
 ```
 
+And now you need 
+
 Now you could do CRUD on Siswa, since you haven't learned how to work with file uploads in Laravel, i should show that first beforehand.
 
 First we need to prepare the routes for Pelanggaran table:
 ```php
     Route::get('/pelanggaran', [PelanggaranController::class, 'index']);
-    qRoute::post('/pelanggaran', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
+    Route::get('/pelanggaran', [PelanggaranController::class, 'search'])->name('pelanggaran.search');
+    Route::post('/pelanggaran', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
     Route::put('/pelanggaran/{id}', [PelanggaranController::class, 'update'])->name('pelanggaran.update');
     Route::delete('/pelanggaran/{id}', [PelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
 ```
@@ -791,6 +1070,12 @@ And moving on to the views pelanggaran.blade.php:
     <h3>Data Pelanggaran</h3>
     <div class="table-responsive">
         <div class="row mb-3">
+            <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/pelanggaran">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
             <div class="col-12 col-lg-auto">
                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahPelanggaran">Tambah</button>
             </div>
@@ -851,7 +1136,14 @@ public function index() {
         $data = Pelanggaran::all();
         $dataSiswa = Siswa::all();
         return view('pages.petugas.pelanggaran', compact('data', 'dataSiswa'));
-    }
+}
+
+public function search(Request $request) {
+    $keyword = $request->search;
+    $data = Pelanggaran::where('nis', 'like', "%" . $keyword . "%")->paginate(5);
+    $dataSiswa = Siswa::all();
+    return view('pages.petugas.pelanggaran', compact(['data', 'dataSiswa']));
+}
 ```
 
 Just like before add this modal before the @endsection line:
@@ -1487,6 +1779,7 @@ Now you can do CRUD on there. Now for the tanggapan, its the same as others, rea
 First we need to go to web.php and prepare the routes
 ```php
     Route::get('/tanggapan', [TanggapanController::class, 'index']);
+    Route::get('/tanggapan', [TanggapanController::class, 'search'])->name('tanggapan.search');
     Route::post('/tanggapan', [TanggapanController::class, 'store'])->name('tanggapan.store');
     Route::put('/tanggapan/{id}', [TanggapanController::class, 'update'])->name('tanggapan.update');
     Route::delete('/tanggapan/{id}', [TanggapanController::class, 'destroy'])->name('tanggapan.destroy');
@@ -1591,10 +1884,17 @@ use App\Models\Tanggapan;
 use APp\Models\Petugas;
 
 public function index() {
-        $data = Tanggapan::all();
-        $petugasList = Petugas::all();
-        return view('pages.petugas.tanggapan', compact('data', 'petugasList'));
-    }
+    $data = Tanggapan::all();
+    $petugasList = Petugas::all();
+    return view('pages.petugas.tanggapan', compact('data', 'petugasList'));
+}
+
+public function search(Request $request) {
+    $keyword = request('search');
+    $data = Tanggapan::where('id_tanggapan', 'like', "%" . $keyword . "%")->paginate(5);
+    $petugasList = Petugas::all();
+    return view('pages.petugas.tanggapan', compact('data', 'petugasList'));
+}
 ```
 
 Now just like before add this modal before the @endsection:
@@ -1844,6 +2144,7 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::delete('/siswa/{id}', [SiswaController::class, 'destroy'])->name('siswa.destroy');
 
     Route::get('/pelanggaran', [PelanggaranController::class, 'index']);
+    Route::get('/pelanggaran', [PelanggaranController::class, 'search'])->name('pelanggaran.search');
     Route::post('/pelanggaran', [PelanggaranController::class, 'store'])->name('pelanggaran.store');
     Route::put('/pelanggaran/{id}', [PelanggaranController::class, 'update'])->name('pelanggaran.update');
     Route::delete('/pelanggaran/{id}', [PelanggaranController::class, 'destroy'])->name('pelanggaran.destroy');
@@ -1854,6 +2155,7 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::delete('/petugas/{id}', [PetugasController::class, 'destroy'])->name('petugas.destroy');
 
     Route::get('/tanggapan', [TanggapanController::class, 'index']);
+    Route::get('/tanggapan', [TanggapanController::class, 'search'])->name('tanggapan.search');
     Route::post('/tanggapan', [TanggapanController::class, 'store'])->name('tanggapan.store');
     Route::put('/tanggapan/{id}', [TanggapanController::class, 'update'])->name('tanggapan.update');
     Route::delete('/tanggapan/{id}', [TanggapanController::class, 'destroy'])->name('tanggapan.destroy');

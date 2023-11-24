@@ -2,22 +2,21 @@
 
 1. Make the Laravel project:
 ```bash
-composer create-project laravel/laravel latukk
+composer create-project laravel/laravel openbk "10.*.*"
 ```
 in this case we're making Student Violation Tracker so name it something like that
 
-2. Now after we cd into the project and opened it in your favourite code editor we need to prepare the database called **"ukk_bk"**
+2. Now after we cd into the project and opened it in your favourite code editor we need to prepare the database called **"openbk"**
 
-3. Open the .env file in your project directory and configure the database connection by setting the DB_DATABASE to "ukk_bk"
+3. Open the .env file in your project directory and configure the database connection by setting the DB_DATABASE to "openbk"
 ```env
-DB_DATABASE = ukk_bk
+DB_DATABASE = openbk
 ```
 
 4. In the config/app.php file, set the timezone to your preferred timezone. For example, if you live in Jakarta, set it to "Asia/Jakarta."
 ```env
 'timezone' => 'Asia/Jakarta',
 ```
-
 
 5. Now we're making the migration for the tables in the database, there are 5 tables in total but one of them are a trigger table.
 
@@ -59,7 +58,7 @@ Since we will be using a library to manage Petugas permissions and role in the d
 We need to install the required library through composer by doing this command below:
 
 ```bash
- composer require spatie/laravel-permission
+ composer require spatie/laravel-permission "6.*"
 ```
 
 After that if the service provider did not automatically get registered you may manually add the service provider in your config/app.php file:
@@ -374,35 +373,34 @@ Now the go to resources/views/ and make auth/login.blade.php and put this code:
     <title>Login</title>
 </head>
 <body>
-    <div class="container py-5">
-        <div class="w-50 center border rounded px-3 py-3 mx-auto">
-            <h1>Login</h1>
-            {{-- untuk menangkap inputan --}}
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $item)
-                            <li>{{ $item }}</li>
-                        @endforeach
-                    </ul>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card my-5">
+                <div class="card-body">
+                    <h1 class="text-center mb-4 text-primary">Tentang Aplikasi</h1>
+                    <p class="text-center text-muted">
+                        Aplikasi ini dibuat untuk membantu guru BP/BK dalam mendata dan mendokumentasikan pelanggaran tata tertib di sekolah.
+                    </p>
+                    <hr class="my-4">
+                    <h2 class="text-center mb-4 text-primary">Login</h2>
+                    <form action="" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" value="{{ old('username') }}" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                    </form>
                 </div>
-            @endif
-            <form action="" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="username" value="{{ old('username') }}" name="username" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control">
-                </div>
-                <div class="mb-3 d-grid">
-                    <button name="submit" type="submit" class="btn btn-primary">Login</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+</div>
 </body>
 </html>
 ```
