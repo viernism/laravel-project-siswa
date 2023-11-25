@@ -1486,13 +1486,13 @@ First we need to prepare the routes:
 
 Now we want to just display the data, and its the same as others:
 ```php
-use App\Models\Pelanggaran;
-use App\Models\Siswa;
+use App\Models\Petugas;
+use Spatie\Permission\Models\Role;
 
 public function index() {
-        $data = Pelanggaran::all();
-        $dataSiswa = Siswa::all();
-        return view('pages.petugas.pelanggaran', compact('data', 'dataSiswa'));
+        $data = Petugas::all();
+        $roles = Role::all();
+        return view('pages.petugas.petugas', compact('data', 'roles'));
     }
 ```
 
