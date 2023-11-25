@@ -1099,64 +1099,81 @@ And moving on to the views pelanggaran.blade.php:
 
 @section('content')
 <div class="container">
-    <h3>Data Pelanggaran</h3>
-    <div class="table-responsive">
-        <div class="row mb-3">
-            <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/pelanggaran">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
-                    <button type="submit" class="btn btn-primary">Search</button>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Pelanggaran
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                @role('gurubk')
+                <div class="row mb-3">
+                    <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/pelanggaran">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+
+                    <div class="col-12 col-lg-auto">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahPelanggaran">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
                 </div>
-            </form>
-            <div class="col-12 col-lg-auto">
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahPelanggaran">Tambah</button>
+
+
+                @if ($data->isNotEmpty())
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>Foto</th>
+                                <th>NIS</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Tanggal</th>
+                                <th>Isi Pelanggaran</th>
+                                <th>Aksi</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; ?>
+                            @foreach ($data as $dt)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td style="text-align: center">
+                                        <img src="{{ asset('photos/' . $dt->foto) }}" width="75" height="75">
+                                    </td>
+                                    <td>{{ $dt->nis }}</td>
+                                    <td>{{ $dt->siswa->nama }}</td>
+                                    <td>{{ $dt->siswa->kelas }}</td>
+                                    <td>
+                                        @if ($dt->tgl_pelanggaran)
+                                            {{ $dt->tgl_pelanggaran->format('d F Y') }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td>{{ $dt->isi_pelanggaran }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahPelanggaran{{ $dt->id }}">
+                                            <i class="fas fa-edit"></i> Ubah
+                                        </button>
+                                        <a href="" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusPelanggaran{{ $dt->id }}">
+                                            <i class="fas fa-trash-alt"></i> Hapus
+                                        </a>
+                                    </td>
+                                </tr>                      
+                                @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>Tidak ada data</p>
+                @endif
             </div>
         </div>
-        
-        @if ($data->isNotEmpty()) 
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Foto</th>
-                    <th>NIS</th>
-                    <th>Nama</th>
-                    <th>Kelas</th>
-                    <th>Tanggal</th>
-                    <th>Isi Pelanggaran</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $no = 1; ?>
-                @foreach ($data as $dt)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td style="text-align: center">
-                        <img src="{{asset('photos/'.$dt->foto)}}" width="40%">
-                    </td>
-                    <td>{{ $dt->nis }}</td>
-                    <td>{{ $dt->siswa->nama }}</td>
-					<td>{{ $dt->siswa->kelas }}</td>
-                    <td>
-                        @if ($dt->tgl_pelanggaran)
-                        {{ $dt->tgl_pelanggaran->format('d F Y') }}
-                        @else
-                        N/A
-                        @endif
-                    </td>
-                    <td>{{ $dt->isi_pelanggaran }}</td>
-                    <td colspan="4">
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahPelanggaran{{ $dt->id }}">Ubah</button>
-                        <a href="" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusPelanggaran{{ $dt->id }}">Hapus</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @else
-        <p>Tidak ada data</p>
-        @endif
     </div>
 </div>
 @endsection
@@ -1486,57 +1503,72 @@ For the view:
 
 @section('content')
 <div class="container">
-    <h1>Data Petugas</h1>
-    <div class="table-responsive">
-        <div class="row mb-3">
-            <div class="col-12 col-lg-auto">
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahPetugas">Tambah</button>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Petugas
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="row mb-3">
+                    <div class="col-12 col-lg-auto">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahPetugas">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+
+                @if ($data->isNotEmpty())
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>ID Petugas</th>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Telp</th>
+                                <th>Level</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; ?>
+                            @foreach ($data as $dt)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $dt->id_petugas }}</td>
+                                    <td>{{ $dt->nama }}</td>
+                                    <td>{{ $dt->username }}</td>
+                                    <td>{{ $dt->telp }}</td>
+                                    <td>
+                                        @foreach ($dt->roles as $role)
+                                            {{ $role->name }}
+                                            @if (!$loop->last)
+                                                ,
+                                            @endif
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahPetugas{{ $dt->id }}">
+                                            <i class="fas fa-edit"></i> Ubah
+                                        </button>
+                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusPetugas{{ $dt->id }}">
+                                            <i class="fas fa-trash-alt"></i> Hapus
+                                        </a>
+                                    </td>
+                                </tr>                          
+                                @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>Tidak ada data</p>
+                @endif
             </div>
         </div>
-        
-        @if ($data->isNotEmpty()) 
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>ID Petugas</th>
-                    <th>Nama</th>
-                    <th>Username</th>
-                    <th>Telp</th>
-                    <th>level</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $no = 1; ?>
-                @foreach ($data as $dt)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $dt->id_petugas }}</td>
-                    <td>{{ $dt->nama }}</td>
-                    <td>{{ $dt->username }}</td>
-                    <td>{{ $dt->telp }}</td>
-                    <td>
-                        @foreach ($dt->roles as $role)
-                            {{ $role->name }}
-                            @if (!$loop->last)
-                                ,
-                            @endif
-                        @endforeach
-                    </td>                    
-                    <td colspan="4">
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahPetugas{{ $dt->id }}">Ubah</button>
-                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusPetugas{{ $dt->id }}">Hapus</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @else
-        <p>Tidak ada data</p>
-        @endif
     </div>
 </div>
+
+
 @endsection
 ```
 
@@ -1853,58 +1885,76 @@ class Tanggapan extends Model
 
 For the view:
 ```php
-@extends('layouts.app', ['title' => 'Tanggapan'])
+@@extends('layouts.app', ['title' => 'Tanggapan'])
 
 @section('content')
 <div class="container">
-    <h1>Data Tanggapan</h1>
-    <div class="table-responsive">
-        <div class="row mb-3">
-            <div class="col-12 col-lg-auto">
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahTanggapan">Tambah</button>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Tanggapan
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="row mb-3">
+                    <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/tanggapan">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan ID Tanggapan">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                    <div class="col-12 col-lg-auto">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahSiswa">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+                @if ($data->isNotEmpty())
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>ID Tanggapan</th>
+                                <th>ID Pelanggaran</th>
+                                <th>Tanggal Tanggapan</th>
+                                <th>Isi Tanggapan</th>
+                                <th>ID Petugas</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; ?>
+                            @foreach ($data as $dt)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $dt->id_tanggapan }}</td>
+                                    <td>{{ $dt->id_pelanggaran }}</td>
+                                    <td>
+                                        @if ($dt->tgl_tanggapan)
+                                            {{ $dt->tgl_tanggapan->format('d F Y') }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td>{{ $dt->isi_tanggapan }}</td>
+                                    <td>{{ $dt->id_petugas }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahTanggapan{{ $dt->id }}">
+                                            <i class="fas fa-edit"></i> Ubah
+                                        </button>
+                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusTanggapan{{ $dt->id }}">
+                                            <i class="fas fa-trash-alt"></i> Hapus
+                                        </a>
+                                    </td>
+                                </tr>                          
+                                @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>Tidak ada data</p>
+                @endif
             </div>
         </div>
-        
-        @if ($data->isNotEmpty()) 
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>ID Tanggapan</th>
-                    <th>ID Pelanggaran</th>
-                    <th>Tanggal Tanggapan</th>
-                    <th>Isi Tanggapan</th>
-                    <th>ID Petugas</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $no = 1; ?>
-                @foreach ($data as $dt)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $dt->id_tanggapan }}</td>
-                    <td>{{ $dt->id_pelanggaran }}</td>
-                    <td>
-                        @if ($dt->tgl_tanggapan)
-                            {{ $dt->tgl_tanggapan->format('d F Y') }}
-                        @else
-                            N/A
-                        @endif
-                      </td>                    
-                    <td>{{ $dt->isi_tanggapan }}</td>
-                    <td>{{ $dt->id_petugas }}</td>                    
-                    <td colspan="4">
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahTanggapan{{ $dt->id }}">Ubah</button>
-                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusTanggapan{{ $dt->id }}">Hapus</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @else
-        <p>Tidak ada data</p>
-        @endif
     </div>
 </div>
 @endsection
