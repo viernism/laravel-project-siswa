@@ -43,3 +43,49 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     });
 });
 ```
+
+and
+
+```php
+@if (auth()->check())
+                            @role('gurubk')
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
+                                        data-bs-target="#pages" aria-expanded="false" aria-controls="pages">
+                                        <i class="fa-regular fa-file-lines pe-2"></i>
+                                        Pages
+                                    </a>
+                                    <ul id="pages" class="sidebar-dropdown list-unstyled collapse"
+                                        data-bs-parent="#sidebar">
+                                        @foreach (['Siswa', 'Pelanggaran', 'Tanggapan'] as $item)
+                                            <li class="sidebar-item">
+                                                <a href="{{ url(strtolower($item)) }}" class="sidebar-link text-white">
+                                                    {{ $item }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @else
+                                @role('admin')
+                                    <li class="sidebar-item">
+                                        <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
+                                            data-bs-target="#pages" aria-expanded="false" aria-controls="pages">
+                                            <i class="fa-regular fa-file-lines pe-2"></i>
+                                            Pages
+                                        </a>
+                                        <ul id="pages" class="sidebar-dropdown list-unstyled collapse"
+                                            data-bs-parent="#sidebar">
+                                            @foreach (['Siswa', 'Petugas', 'Pelanggaran', 'Tanggapan', 'Trigger'] as $item)
+                                                <li class="sidebar-item">
+                                                    <a href="{{ url(strtolower($item)) }}" class="sidebar-link text-white">
+                                                        {{ $item }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </li>
+                                @endrole
+                            @endrole
+                        @endif
+```
