@@ -554,47 +554,62 @@ home.blade.php:
 
 @section('content')
 <div class="container">
-    <h3>Data Pelanggaran Siswa</h3>
-    <div class="table-responsive">
-      <div class="row mb-3">
-        <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/">
-          <div class="input-group">
-              <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
-              <button type="submit" class="btn btn-primary">Search</button>
-          </div>
-      </form>
-      
-      </div>
-      <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-              <th>No</th>
-              <th>NIS</th>
-              <th>Nama</th>
-              <th>Kelas</th>
-              <th>Tanggal</th>
-              <th>Pelanggaran</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php $no = 1; ?>
-          @foreach ($data as $dt)
-                <tr>
-                  <td>{{ $no++ }}</td>
-                  <td>{{ $dt->nis }}</td>
-                  <td>{{ $dt->siswa->nama }}</td>
-                  <td>{{ $dt->siswa->kelas }}</td>
-                  <td>{{ $dt->tgl_pelanggaran }}</td>
-                  <td>{{ $dt->isi_pelanggaran }}</td>
-                  <td colspan="4">Edit Del</td>
-                </tr>
-          @endforeach
-          </tbody>
-        </table>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Pelanggaran Siswa
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="row mb-3">
+                    <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                </div>
+                @if ($data->isNotEmpty())
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIS</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Tanggal</th>
+                                <th>Pelanggaran</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; ?>
+                            @foreach ($data as $dt)
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $dt->nis }}</td>
+                                    <td>{{ $dt->siswa->nama }}</td>
+                                    <td>{{ $dt->siswa->kelas }}</td>
+                                    <td>
+                                        @if ($dt->tgl_pelanggaran)
+                                            {{ $dt->tgl_pelanggaran->format('d F Y') }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td>{{ $dt->isi_pelanggaran }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>Tidak ada data</p>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 @endsection
+
 ```
 
 Now put these in the Pelanggaran model:
@@ -676,55 +691,72 @@ First we want to display data just like home.blade.php but in siswa.blade.php in
 
 @section('content')
 <div class="container">
-    <h3>Data Pelanggaran Siswa</h3>
-    <div class="table-responsive">
-        <div class="row mb-3">
-            <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/siswa">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </div>
-            </form>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Data Pelanggaran Siswa
         </div>
-        
-        @if ($data->isNotEmpty()) 
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>NIS</th>
-                    <th>Nama</th>
-                    <th>Kelas</th>
-                    <th>Tanggal</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php $no = 1; ?>
-                @foreach ($data as $dt)
-                <tr>
-                    <td>{{ $no++ }}</td>
-                    <td>{{ $dt->nis }}</td>
-                    <td>{{ $dt->nama }}</td>
-                    <td>{{ $dt->kelas }}</td>
-                    <td>
-                        @if ($dt->created_at)
-                        {{ $dt->created_at->format('d F Y') }}
-                        @else
-                        N/A
-                        @endif
-                    </td>
-                    <td colspan="4">
-                        <button type="button" class="btn btn-warning btn-sm">Ubah</button>
-                        <a href="" class="btn btn-danger btn-sm">Hapus</a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @else
-        <p>Tidak ada data</p>
-        @endif
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="row mb-3">
+                    <form class="col-12 col-lg-auto mb-2 mb-lg-0 me-lg-auto" role="search" method="get" action="/siswa">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" id="search" placeholder="Masukkan NIS Siswa">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                    <div class="col-12 col-lg-auto">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahSiswa">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+
+                </div>
+
+                @if ($data->isNotEmpty())
+                <table class="table table-hover table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>NIS</th>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $no = 1; ?>
+                        @foreach ($data as $dt)
+                        <tr>
+                            <td>{{ $no++ }}</td>
+                            <td>{{ $dt->nis }}</td>
+                            <td>{{ $dt->nama }}</td>
+                            <td>{{ $dt->kelas }}</td>
+                            <td>
+                                @if ($dt->created_at)
+                                    {{ $dt->created_at->format('d F Y') }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#ubahSiswa{{ $dt->id }}">
+                                    <i class="fas fa-edit"></i> Ubah
+                                </button>
+                                <a href="" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#hapusSiswa{{ $dt->id }}">
+                                    <i class="fas fa-trash-alt"></i> Hapus
+                                </a>
+                            </td>
+                        </tr>                     
+                        @endforeach
+                    </tbody>
+                </table>
+                @else
+                <p>Tidak ada data</p>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 @endsection
