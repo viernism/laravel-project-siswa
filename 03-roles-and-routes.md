@@ -203,4 +203,25 @@ It adds additional links for Petugas and Trigger.
     @endrole
 @endif
 ```
-Now, we're all done with the routes and roles. time to move to the next thing.
+Now, we're all done with the routes and roles. time to move to the next thing which is preview images.
+
+Go to app.js in public directory and place this code:
+```js
+$(document).ready(function () {
+    function handleImagePreview(input, previewElement) {
+        $(input).change(function () {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                $(previewElement).attr('src', e.target.result);
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+    }
+
+    handleImagePreview('#image', '#prevFoto');
+
+    handleImagePreview('#ubahImg', '#prevImg');
+});
+```
+
+Now go to part 4, we're all done here.
