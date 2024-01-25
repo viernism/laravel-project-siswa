@@ -121,7 +121,7 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 ```
 
 
-Now we wan't to separate the pages just like how we did on the routes.
+Now we want to separate the pages just like how we did on the routes.
 
 the ```@if (auth()->check())``` is used to check the if the user is authenticated or not for the html to be displayed, so the guest routes are not affected.
 
@@ -208,12 +208,15 @@ Now, we're all done with the routes and roles. time to move to the next thing wh
 Go to app.js in public directory and place this code:
 ```js
 $(document).ready(function () {
-    function handleImagePreview(input, previewElement) {
-        $(input).change(function () {
+    function handleImagePreview(inputClass, previewElementClass) {
+        $(document).on('change', inputClass, function () {
             let reader = new FileReader();
+            let previewElement = $(this).closest('.modal').find(previewElementClass);
+
             reader.onload = function (e) {
-                $(previewElement).attr('src', e.target.result);
+                previewElement.attr('src', e.target.result);
             };
+
             reader.readAsDataURL(this.files[0]);
         });
     }
@@ -223,5 +226,3 @@ $(document).ready(function () {
     handleImagePreview('#ubahImg', '#prevImg');
 });
 ```
-
-Now go to part 4, we're all done here.
