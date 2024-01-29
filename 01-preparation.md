@@ -28,7 +28,7 @@ Schema:
 ```php
 Schema::create('siswa', function (Blueprint $table) {
             $table->id();
-            $table->char('nis', 10)->unique;
+            $table->char('nis', 10)->unique();
             $table->string('nama', 50);
             $table->string('kelas', 10);             
             $table->timestamps();
