@@ -292,6 +292,22 @@ footer.blade.php:
 </footer>
 ```
 
+index.blade.php:
+```php
+@extends('layouts.app', ['title' => 'Home'])
+
+@section('content')
+    <div class="mx-4">
+        @auth
+            <h1>Welcome, {{ auth()->user()->username }}!</h1>
+        @else
+            <h1>Welcome, Guest!</h1>
+        @endauth
+    </div>
+
+@endsection
+```
+
 style.css:
 ```css
 :root,
