@@ -278,6 +278,20 @@ app.blade.php:
 
 </html>
 ```
+
+footer.blade.php:
+```php
+<footer class="footer text-dark">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <p>&copy; RPL, Inc</p>
+            </div>
+        </div>
+    </div>
+</footer>
+```
+
 style.css:
 ```css
 :root,
