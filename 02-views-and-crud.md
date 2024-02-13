@@ -17,6 +17,7 @@ In the previous part, we're done with the Login and Logout. In this part we're g
     │   test.blade.php <!-- delete this file -->
     │
     └───petugas
+            index.blade.php
             pelanggaran.blade.php
             petugas.blade.php
             siswa.blade.php
@@ -164,17 +165,11 @@ app.blade.php:
                 <div class="h-100">
                     <div class="sidebar-logo text-white">
                         @auth
-                            @role('gurubk')
-                                Guru
-                                @elserole('admin')
-                                Admin
-                            @else
-                                Latihan UKK
-                            @endrole
+                            Aplikasi BK
                         @endauth
 
                         @guest
-                            Latihan UKK
+                            Aplikasi BK
                         @endguest
                     </div>
                     <!-- Sidebar Navigation -->
@@ -182,22 +177,45 @@ app.blade.php:
                         <li class="sidebar-header">
                             Tools & Components
                         </li>
-                        <li class="sidebar-item">
-                            <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
-                                data-bs-target="#pages" aria-expanded="false" aria-controls="pages">
-                                <i class="fa-regular fa-file-lines pe-2"></i>
-                                Pages
-                            </a>
-                            <ul id="pages" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                                @foreach (['Siswa', 'Petugas', 'Pelanggaran', 'Tanggapan', 'Trigger'] as $item)
-                                    <li class="sidebar-item">
-                                        <a href="{{ url(strtolower($item)) }}" class="sidebar-link text-white">
-                                            {{ $item }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </li>
+                        @if (auth()->check())
+                        @role('gurubk')
+                            <li class="sidebar-item">
+                                <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#pages"
+                                    aria-expanded="false" aria-controls="pages">
+                                    <i class="fa-regular fa-file-lines pe-2"></i>
+                                    Pages
+                                </a>
+                                <ul id="pages" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                    @foreach (['Dashboard', 'Siswa', 'Pelanggaran', 'Tanggapan'] as $item)
+                                        <li class="sidebar-item">
+                                            <a href="{{ url(strtolower($item)) }}" class="sidebar-link text-white">
+                                                {{ $item }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @else
+                            @role('admin')
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse" data-bs-target="#pages"
+                                        aria-expanded="false" aria-controls="pages">
+                                        <i class="fa-regular fa-file-lines pe-2"></i>
+                                        Pages
+                                    </a>
+                                    <ul id="pages" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+                                        @foreach (['Dashboard', 'Siswa', 'Petugas', 'Pelanggaran', 'Tanggapan'] as $item)
+                                            <li class="sidebar-item">
+                                                <a href="{{ url(strtolower($item)) }}" class="sidebar-link text-white">
+                                                    {{ $item }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @endrole
+                        @endrole
+                    @endif
                     </ul>
             </aside>
             <!-- Main Component -->
@@ -238,6 +256,10 @@ app.blade.php:
                         </div>
                     </div>
                 </main>
+                <!-- Footer -->
+                <footer class="footer mt-auto py-3 bg-dark text-white text-center">
+                    Copyright &copy; RPL 2023
+                </footer>
             </div>
         </div>
     @endauth
@@ -269,27 +291,15 @@ app.blade.php:
                     </div>
                 </div>
             </main>
+            <!-- Footer -->
+            <footer class="footer mt-auto py-3 bg-dark text-white text-center">
+                Copyright &copy; RPL 2023
+            </footer>
         </div>
     @endguest
-
-    @include('layouts.footer')
-
 </body>
 
 </html>
-```
-
-footer.blade.php:
-```php
-<footer class="footer text-dark">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <p>&copy; RPL, Inc</p>
-            </div>
-        </div>
-    </div>
-</footer>
 ```
 
 index.blade.php:
@@ -304,7 +314,6 @@ index.blade.php:
             <h1>Welcome, Guest!</h1>
         @endauth
     </div>
-
 @endsection
 ```
 
@@ -444,7 +453,8 @@ style.css:
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  height: 100%;
   font-family: "Poppins", sans-serif;
   margin: 0;
 }
@@ -486,6 +496,23 @@ li {
 #sidebar a:focus,
 #sidebar .sidebar-header {
     color: #fff;
+}
+
+/* Sidebar opened */
+
+.sidebar-dropdown {
+  padding-left: 20px;
+}
+
+.sidebar-dropdown li a {
+  display: block;
+  padding: 10px 20px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.sidebar-dropdown li a:hover {
+  background-color: #454d55; /* Hover background color */
 }
 
 /* Sidebar collapse */
@@ -555,6 +582,12 @@ a.sidebar-link {
   width: 100vw;
 }
 
+/* Login Site */
+
+.logo-wrapper {
+  float: left;
+}
+
 /* Responsive */
 
 @media (min-width: 768px) {
@@ -562,6 +595,7 @@ a.sidebar-link {
     width: auto;
   }
 }
+
 ```
 
 app.js:
