@@ -368,41 +368,55 @@ Now the go to resources/views/ and make auth/login.blade.php and put this code:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+        crossorigin="anonymous">
     <title>Login</title>
+    <style>
+        .logo-img {
+            width: 120px; /* Adjust width as needed */
+            display: block;
+            margin: 3px auto; /* Center horizontally */            
+        }
+    </style>
 </head>
+
 <body>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card my-5">
-                <div class="card-body">
-                    <h1 class="text-center mb-4 text-primary">Tentang Aplikasi</h1>
-                    <p class="text-center text-muted">
-                        Aplikasi ini dibuat untuk membantu guru BP/BK dalam mendata dan mendokumentasikan pelanggaran tata tertib di sekolah.
-                    </p>
-                    <hr class="my-4">
-                    <h2 class="text-center mb-4 text-primary">Login</h2>
-                    <form action="" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" name="username" value="{{ old('username') }}" class="form-control" id="username" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" id="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                    </form>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card my-5 card-container">
+                    <img src="{{ asset('photos/logo-2.png')}}" alt="Logo" class="logo-img">
+                    <div class="card-body">
+                        <h1 class="text-center mb-4 text-primary">Tentang Aplikasi</h1>
+                        <p class="text-center text-muted">
+                            Aplikasi ini dibuat untuk membantu guru BP/BK dalam mendata dan mendokumentasikan
+                            pelanggaran tata tertib di sekolah.
+                        </p>
+                        <hr class="my-4">
+                        <h2 class="text-center mb-4 text-primary">Login</h2>
+                        <form action="" method="POST">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" name="username" value="{{ old('username') }}" class="form-control"
+                                    id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" id="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>
+
 ```
 Go to routes/web.php and add this line of code:
 ```php
